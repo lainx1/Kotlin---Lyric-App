@@ -90,5 +90,15 @@
             android:layout_gravity="center_horizontal"
             android:text="@string/button_search"
             style="@style/Widget.AppCompat.Button.Colored"/>
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/loadView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:lottie_imageAssetsFolder="assets"
+            app:lottie_fileName="custom_load.json"
+            app:lottie_loop="true"
+            app:lottie_autoPlay="true"
+            android:visibility="gone"/>
     </LinearLayout>
 </ScrollView>

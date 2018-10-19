@@ -11,4 +11,6 @@
     <string name="button_search">Buscar</string>
     <string name="error_message_empty_artist">Debe ingresar el nombre de un artista</string>
     <string name="error_message_empty_song_name">Debe ingresar el nombre una canción</string>
+    <string name="error_lyrics_not_found">Letra no encontrada intente con otra canción</string>
+    <string name="dialog_title_error">Error</string>
 </resources>

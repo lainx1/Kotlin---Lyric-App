@@ -2,11 +2,19 @@ package com.example.eheca.lyricsapp
 
 import android.content.Context
 import android.content.Intent
+import android.os.AsyncTask
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatDelegate
+import android.view.View
+
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+import org.json.JSONObject
+import java.io.BufferedInputStream
+import java.io.BufferedReader
+import java.io.InputStreamReader
 
 class MainActivity : AppCompatActivity() {
     private var lyricsApp: LyricsApp? = null
@@ -53,6 +61,7 @@ class MainActivity : AppCompatActivity() {
         //search_Button Listener
         search_Button.setOnClickListener {
             //Get the artist and song name
+            var apiUrl = "https://api.lyrics.ovh/v1/artist/title"
             val artist: String = artist_EditText.text.toString()
             val songName: String = songName_EditText.text.toString()
 
@@ -70,10 +79,11 @@ class MainActivity : AppCompatActivity() {
             }else
                 songName_EditText.error = null
 
-            //Get the lyric
-            val lyric = "Antes de que nos olviden\r\nHaremos historia.\r\nNo andaremos de rodillas;\r\n\nEl alma no tiene la culpa. \nAntes de que nos olviden\n\nRasgaremos paredes\n\nY buscaremos restos;\n\nNo importa si fue nuestra vida. \n\n\n\nAntes de que nos olviden\n\nNos evaporaremos en magueyes,\n\nY subiremos hasta el cielo \n\n\n\nY bajaremos con la lluvia.\n\nAntes de que nos olviden\n\nRomperemos jaulas,\n\nY gritaremos la fuga;\n\nNo hay que condenar el alma. \n\n\n\nAunque tu me olvides,\n\nTe pondré en un altar de veladoras,\n\nY en cada una pondré tu nombre,\n\nY cuidare de tu alma. \n\n\n\nAmén."
-
-            startLyricActivity(songName = songName, lyric = lyric)
+            //Build the api url with artist and title parameters
+            apiUrl = apiUrl!!.replace("artist", artist)
+            apiUrl = apiUrl!!.replace("title", songName)
+            //Execute ApiData
+            GetApiData(this, apiUrl,songName).execute()
         }
     }
     private fun restartApp(){
@@ -86,11 +96,67 @@ class MainActivity : AppCompatActivity() {
         //Finish the application
         finish()
     }
-    private fun startLyricActivity(songName: String, lyric: String){
+    private fun startLyricActivity(songName: String?, lyric: String?){
         //Starts LyricActivity again
         val intent = Intent(this, LyricActivity::class.java)
         intent.putExtra(LyricActivity.song_name_key,songName)
         intent.putExtra(LyricActivity.lyric_key, lyric)
         startActivity(intent)
+    }
+    private fun showErrorDialog(){
+        //Build the dialog
+        var dialogBuilder = AlertDialog.Builder(this@MainActivity)
+        dialogBuilder.setTitle(R.string.dialog_title_error)
+        dialogBuilder.setMessage(R.string.error_lyrics_not_found)
+        dialogBuilder.setPositiveButton("Ok"){ _ , _ ->}
+
+        //Create the dialog
+        val dialog = dialogBuilder.create()
+        //Display the dialog
+        dialog.show()
+    }
+    //Async task to load the Api data
+    open class GetApiData(mainActivity: MainActivity,apiUrl: String ,songName: String): AsyncTask<Unit, Unit, String>(){
+        var mainActivity: MainActivity? = null
+        var songName: String? = null
+        var apiUrl: String ? = null
+        init {
+            this.mainActivity = mainActivity
+            this.songName = songName
+            this.apiUrl = apiUrl
+        }
+
+        override fun onPreExecute() {
+            super.onPreExecute()
+            //Show load lottie animation
+            mainActivity?.search_Button?.visibility = View.GONE
+            mainActivity?.loadView?.visibility = View.VISIBLE
+        }
+        override fun doInBackground(vararg p0: Unit?): String {
+            //Start the ApiClient for search the lyrics song
+            val apiClient = APIClient()
+            val stream = BufferedInputStream(apiClient.getJson(apiUrl!!))
+            return readStream(stream)
+        }
+
+        override fun onPostExecute(result: String?) {
+            super.onPostExecute(result)
+            var jsonObject = JSONObject(result)
+            //Hide load lottie animation
+            mainActivity?.search_Button?.visibility = View.VISIBLE
+            mainActivity?.loadView?.visibility = View.GONE
+            //Show alert dialog if the lyric won´t be found
+            if (jsonObject.isNull("lyrics")){
+                mainActivity?.showErrorDialog()
+                return
+            }
+            mainActivity?.startLyricActivity(songName, jsonObject.getString("lyrics"))
+        }
+        private fun readStream(inputStream: BufferedInputStream): String{
+            val bufferedReader = BufferedReader(InputStreamReader(inputStream))
+            val stringBuilder = StringBuilder()
+            bufferedReader.forEachLine { stringBuilder.append(it) }
+            return stringBuilder.toString()
+        }
     }
 }

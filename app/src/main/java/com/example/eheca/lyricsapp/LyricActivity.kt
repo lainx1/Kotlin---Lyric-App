@@ -18,28 +18,28 @@ class LyricActivity : AppCompatActivity() {
         //Set the Light Dark Theme
         setTheme(lyricsApp!!.getAppTheme())
 
+        //Set the back arrow in toolbar
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_lyric)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(true)
 
-        //Get the lyric
+        //Get the lyrics from intent
         if (intent != null){
             val bundle: Bundle = intent.extras
             //Get the lyric and the song name from intent
-            val lyric: String = bundle.getString(lyric_key)
+            val lyrics: String = bundle.getString(lyric_key)
             val songName: String = bundle.getString(song_name_key)
 
             //Set the title in toolbar
             supportActionBar?.title = songName
 
-            lyric_TextView.text = lyric
+            lyric_TextView.text = lyrics
         }
     }
-    //Resume MainActivity instead of refresh it
-    override fun onSupportNavigateUp(): Boolean {
-        onBackPressed()
-        return true
+
+    override fun onBackPressed() {
+        onSupportNavigateUp()
     }
 }
