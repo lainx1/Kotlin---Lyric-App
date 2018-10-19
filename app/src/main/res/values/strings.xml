@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Lyrics App</string>
+    <!--SharedPreferences Options File-->
+    <string name="shared_preferences_app_options_file">OptionsFile</string>
+    <string name="shared_preferences_app_theme">AppTheme</string>
+    <string name="shared_preferences_app_day_night_mode">AppDayNight</string>
+    <!--MainActivity-->
+    <string name="activate_night_mode">Modo Oscuro</string>
+    <string name="hint_artist">Ingresa el nombre del artista</string>
+    <string name="hint_song_name">Ingresa el nombre de la canción</string>
+    <string name="button_search">Buscar</string>
+    <string name="error_message_empty_artist">Debe ingresar el nombre de un artista</string>
+    <string name="error_message_empty_song_name">Debe ingresar el nombre una canción</string>
+</resources>
