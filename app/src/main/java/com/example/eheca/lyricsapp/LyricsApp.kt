@@ -2,7 +2,6 @@ package com.example.eheca.lyricsapp
 
 import android.app.Application
 import android.content.Context
-import android.content.SharedPreferences
 import android.support.v7.app.AppCompatDelegate
 
 class LyricsApp: Application() {
